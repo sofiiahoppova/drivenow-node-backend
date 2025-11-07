@@ -7,3 +7,117 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// --------------------
+// MODELS
+// --------------------
+
+model User {
+  id               Int       @id @default(autoincrement())
+  fullName         String    @db.VarChar(50)
+  email            String    @unique @db.VarChar(100)
+  password         String
+  phoneNumber      String?   @unique @db.VarChar(15)
+  passportUrl      String?
+  driverLicenseUrl String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  reviews          Review[]
+  bookings         Booking[]
+}
+
+model Car {
+  id           Int          @id @default(autoincrement())
+  brand        String       @db.VarChar(30)
+  model        String       @db.VarChar(30)
+  class        Class
+  year         Int
+  seats        Int
+  fuelType     FuelType
+  transmission Transmission
+  consumption  Float
+  imageUrl     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  bookings     Booking[]
+  reviews      Review[]
+  prices       Price[]
+}
+
+model Price {
+  id     Int    @id @default(autoincrement())
+  period Period
+  amount Float
+  carId  Int
+  car    Car    @relation(fields: [carId], references: [id])
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  plan      Plan
+  status    BookingStatus @default(pending)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  carId     Int
+  car       Car           @relation(fields: [carId], references: [id])
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  description String   @db.Text
+  rating      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  carId       Int
+  car         Car      @relation(fields: [carId], references: [id])
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+// --------------------
+// ENUMS
+// --------------------
+
+enum Class {
+  economy
+  compact
+  midsize
+  SUV
+  premium
+}
+
+enum Transmission {
+  automatic
+  manual
+}
+
+enum Period {
+  weekday
+  weekend
+  week
+  month
+}
+
+enum FuelType {
+  petrol
+  diesel
+  hybrid
+  electric
+  gas
+}
+
+enum Plan {
+  fullCoverage
+  basicPlan
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
