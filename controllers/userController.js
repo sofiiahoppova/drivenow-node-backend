@@ -25,10 +25,6 @@ export const getUser = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  if (!req.body.fullName || !req.body.email || !req.body.password) {
-    throw createHttpError(422, 'Full name, email and password is required"');
-  }
-
   if (await prisma.user.findUnique({ where: { email: req.body.email } })) {
     throw createHttpError(409, `${req.body.email} user already exists`);
   }
@@ -52,10 +48,6 @@ export const updateUser = async (req, res) => {
 
   if (!user) {
     throw createHttpError(404, "User not found");
-  }
-
-  if (!req.body) {
-    throw createHttpError(422, "Property is required");
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -101,5 +93,7 @@ export const deleteUser = async (req, res) => {
 
   await prisma.user.delete({ where: { id: parseInt(req.params.id) } });
 
-  return res.status(204).send("User deleted succesfully");
+  return res
+    .status(204)
+    .json({ status: 204, message: "User deleted succesfully" });
 };
