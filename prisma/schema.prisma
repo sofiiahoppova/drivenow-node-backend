@@ -43,15 +43,18 @@ model Car {
   updatedAt    DateTime     @updatedAt
   bookings     Booking[]
   reviews      Review[]
-  prices       Price[]
+  priceId      Int?
+  prices       Price?       @relation(fields: [priceId], references: [id])
 }
 
 model Price {
-  id     Int    @id @default(autoincrement())
-  period Period
-  amount Float
-  carId  Int
-  car    Car    @relation(fields: [carId], references: [id])
+  id           Int      @id @default(autoincrement())
+  carClass     carClass @unique
+  dailyPrice   Float
+  weekendPrice Float
+  weeklyPrice  Float
+  monthlyPrice Float
+  car          Car[]
 }
 
 model Booking {
@@ -95,13 +98,6 @@ enum carClass {
 enum Transmission {
   automatic
   manual
-}
-
-enum Period {
-  weekday
-  weekend
-  week
-  month
 }
 
 enum FuelType {
