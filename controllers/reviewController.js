@@ -1,0 +1,108 @@
+import createHttpError from "http-errors";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const getAllReviews = async (req, res) => {
+  const reviews = await prisma.review.findMany({
+    include: {
+      car: {
+        select: {
+          brand: true,
+          model: true,
+        },
+      },
+      user: { select: { fullName: true } },
+    },
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully found review categories`,
+    data: reviews,
+  });
+};
+
+export const getReview = async (req, res) => {
+  const { id } = req.params;
+  const review = await prisma.review.findUnique({
+    where: { id: parseInt(id) },
+    include: {
+      car: {
+        select: {
+          brand: true,
+          model: true,
+        },
+      },
+      user: { select: { fullName: true } },
+    },
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully found review with id ${id}`,
+    data: review,
+  });
+};
+
+export const createReview = async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.body.userId },
+  });
+
+  if (!user) {
+    throw createHttpError(404, "User with passed id not found");
+  }
+
+  const car = await prisma.car.findUnique({ where: { id: req.body.carId } });
+
+  if (!car) {
+    throw createHttpError(404, "Car with passed id not found");
+  }
+
+  const newReview = await prisma.review.create({
+    data: { ...req.body },
+  });
+
+  return res.status(201).json({
+    status: 200,
+    message: "Successfully added review to database",
+    data: newReview,
+  });
+};
+
+export const updateReview = async (req, res) => {
+  const { id } = req.params;
+  const review = await prisma.review.findUnique({
+    where: { id: parseInt(id) },
+  });
+
+  if (!review) {
+    throw createHttpError(404, "Review not found");
+  }
+
+  const updatedReview = await prisma.review.update({
+    data: { ...req.body },
+    where: { id: parseInt(id) },
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully updated review with id ${id}`,
+    data: updatedReview,
+  });
+};
+
+export const deleteReview = async (req, res) => {
+  const review = await prisma.review.findUnique({
+    where: { id: parseInt(req.params.id) },
+  });
+
+  if (!review) {
+    throw createHttpError(404, "Review not found");
+  }
+
+  await prisma.review.delete({ where: { id: parseInt(req.params.id) } });
+
+  return res.status(204).send();
+};
