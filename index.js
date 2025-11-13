@@ -1,6 +1,8 @@
 import express from "express";
 import userRoute from "./routes/userRoute.js";
 import priceRoute from "./routes/priceRoute.js";
+import reviewRoute from "./routes/reviewRoute.js";
+import carRoute from "./routes/carRoute.js";
 
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -12,6 +14,8 @@ app.use(express.json());
 
 app.use("/users", userRoute);
 app.use("/prices", priceRoute);
+app.use("/cars", carRoute);
+app.use("/reviews", reviewRoute);
 
 app.use("/*splat", notFoundHandler);
 
