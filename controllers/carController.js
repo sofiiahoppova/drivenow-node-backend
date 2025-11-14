@@ -16,6 +16,7 @@ export const getAllCars = async (req, res) => {
           monthlyPrice: true,
         },
       },
+      reviews: { select: { description: true, rating: true } },
     },
   });
 
@@ -73,6 +74,8 @@ export const createCar = async (req, res) => {
     }
   }
 
+  const [quantity, rating] = await ratingCalc(req.body.id);
+
   let newCar;
 
   if (!req.body.priceId) {
@@ -83,12 +86,14 @@ export const createCar = async (req, res) => {
     newCar = await prisma.car.create({
       data: {
         ...req.body,
+        averageRating: rating,
+        reviewCount: quantity,
         priceId: priceCategory.id,
       },
     });
   } else {
     newCar = await prisma.car.create({
-      data: { ...req.body },
+      data: { ...req.body, averageRating: rating, reviewCount: quantity },
     });
   }
 
