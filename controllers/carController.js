@@ -6,7 +6,39 @@ import { ratingCalc } from "../utils/ratingCalculator.js";
 const prisma = new PrismaClient();
 
 export const getAllCars = async (req, res) => {
+  const {
+    brand,
+    transmission,
+    carClass,
+    seats,
+    page = 1,
+    perPage = 10,
+    startDate,
+    endDate,
+  } = req.query;
+
+  const filters = {
+    ...(seats && { seats }),
+    ...(brand && { brand }),
+    ...(transmission && { transmission }),
+    ...(carClass && { carClass }),
+  };
+
+  if (startDate && endDate) {
+    filters.bookings = {
+      none: {
+        AND: [
+          { startDate: { lte: new Date(endDate) } },
+          { endDate: { gte: new Date(startDate) } },
+        ],
+      },
+    };
+  }
+
   const cars = await prisma.car.findMany({
+    where: filters,
+    skip: (page - 1) * perPage,
+    take: perPage,
     include: {
       prices: {
         select: {
