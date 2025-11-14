@@ -28,23 +28,25 @@ model User {
 }
 
 model Car {
-  id           Int          @id @default(autoincrement())
-  serialNumber String       @unique
-  brand        String       @db.VarChar(30)
-  model        String       @db.VarChar(30)
-  carClass     carClass
-  year         Int
-  seats        Int
-  fuelType     FuelType
-  transmission Transmission
-  consumption  Float
-  imageUrl     String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  bookings     Booking[]
-  reviews      Review[]
-  priceId      Int?
-  prices       Price?       @relation(fields: [priceId], references: [id])
+  id            Int          @id @default(autoincrement())
+  serialNumber  String       @unique
+  brand         String       @db.VarChar(30)
+  model         String       @db.VarChar(30)
+  averageRating Float?       @default(0)
+  reviewCount   Int?         @default(0)
+  carClass      carClass
+  year          Int
+  seats         Int
+  fuelType      FuelType
+  transmission  Transmission
+  consumption   Float
+  imageUrl      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  bookings      Booking[]
+  reviews       Review[]
+  priceId       Int?
+  prices        Price?       @relation(fields: [priceId], references: [id])
 }
 
 model Price {

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Car" ADD COLUMN     "averageRating" DOUBLE PRECISION DEFAULT 0,
+ADD COLUMN     "reviewCount" INTEGER DEFAULT 0;
