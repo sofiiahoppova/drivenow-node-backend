@@ -1,0 +1,121 @@
+import createHttpError from "http-errors";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export const getMyBookings = async (req, res) => {
+  const bookings = await prisma.booking.findMany({
+    where: { userId: req.user.id },
+    include: {
+      car: { select: { brand: true, model: true } },
+      user: { select: { fullName: true, email: true } },
+    },
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully found bookings`,
+    data: bookings,
+  });
+};
+
+export const getBooking = async (req, res) => {
+  const { id } = req.params;
+  const booking = await prisma.booking.findUnique({
+    where: { id: parseInt(id) },
+    include: {
+      car: { select: { brand: true, model: true } },
+      user: { select: { fullName: true, email: true } },
+    },
+  });
+
+  if (!booking) {
+    throw createHttpError(404, "Booking not found");
+  }
+
+  const userId = req.user.id;
+
+  if (booking.userId !== userId) {
+    throw createHttpError(403, "Access to the requested resource is forbidden");
+  }
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully found booking with id ${id}`,
+    data: booking,
+  });
+};
+
+export const createBooking = async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw createHttpError(404, "User with passed id not found");
+  }
+
+  const car = await prisma.car.findUnique({ where: { id: req.body.carId } });
+
+  if (!car) {
+    throw createHttpError(404, "Car with passed id not found");
+  }
+
+  const newBooking = await prisma.booking.create({
+    data: { ...req.body, userId },
+  });
+
+  return res.status(201).json({
+    status: 200,
+    message: "Successfully added booking to database",
+    data: newBooking,
+  });
+};
+
+export const updateBooking = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const booking = await prisma.booking.findUnique({
+    where: { id: parseInt(id) },
+  });
+
+  if (!booking) {
+    throw createHttpError(404, "Review not found");
+  }
+
+  if (booking.userId !== userId) {
+    throw createHttpError(403, "Access to the requested resource is forbidden");
+  }
+
+  const updatedBooking = await prisma.booking.update({
+    data: { ...req.body },
+    where: { id: parseInt(id) },
+  });
+
+  return res.status(200).json({
+    status: 200,
+    message: `Successfully updated booking with id ${id}`,
+    data: updatedBooking,
+  });
+};
+
+export const deleteBooking = async (req, res) => {
+  const userId = req.user.id;
+  const booking = await prisma.booking.findUnique({
+    where: { id: parseInt(req.params.id) },
+  });
+
+  if (!booking) {
+    throw createHttpError(404, "Booking not found");
+  }
+
+  if (booking.userId !== userId) {
+    throw createHttpError(403, "Access to the requested resource is forbidden");
+  }
+
+  await prisma.booking.delete({ where: { id: parseInt(req.params.id) } });
+
+  return res.status(204).send();
+};
