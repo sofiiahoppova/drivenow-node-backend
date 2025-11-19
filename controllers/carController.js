@@ -48,7 +48,14 @@ export const getAllCars = async (req, res) => {
           monthlyPrice: true,
         },
       },
-      reviews: { select: { description: true, rating: true } },
+      reviews: {
+        select: {
+          id: true,
+          description: true,
+          rating: true,
+          user: { select: { fullName: true } },
+        },
+      },
     },
   });
 
