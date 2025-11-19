@@ -13,24 +13,27 @@ import {
   updateBooking,
   deleteBooking,
 } from "../controllers/bookingController.js";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 
 const router = Router();
 
-router.get("/", ctrlWrapper(getMyBookings));
-router.get("/:id", ctrlWrapper(getBooking));
+router.get("/", authenticateToken, ctrlWrapper(getMyBookings));
+router.get("/:id", authenticateToken, ctrlWrapper(getBooking));
 
 router.post(
   "/",
+  authenticateToken,
   validateBody(createBookingValidationSchema),
   ctrlWrapper(createBooking)
 );
 
 router.put(
   "/:id",
+  authenticateToken,
   validateBody(updateBookingValidationSchema),
   ctrlWrapper(updateBooking)
 );
 
-router.delete("/:id", ctrlWrapper(deleteBooking));
+router.delete("/:id", authenticateToken, ctrlWrapper(deleteBooking));
 
 export default router;
