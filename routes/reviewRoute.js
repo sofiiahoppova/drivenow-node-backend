@@ -13,6 +13,7 @@ import {
   updateReview,
   deleteReview,
 } from "../controllers/reviewController.js";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 
 const router = Router();
 
@@ -21,16 +22,18 @@ router.get("/:id", ctrlWrapper(getReview));
 
 router.post(
   "/",
+  authenticateToken,
   validateBody(createReviewValidationSchema),
   ctrlWrapper(createReview)
 );
 
 router.put(
   "/:id",
+  authenticateToken,
   validateBody(updateReviewValidationSchema),
   ctrlWrapper(updateReview)
 );
 
-router.delete("/:id", ctrlWrapper(deleteReview));
+router.delete("/:id", authenticateToken, ctrlWrapper(deleteReview));
 
 export default router;

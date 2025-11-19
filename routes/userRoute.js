@@ -1,37 +1,29 @@
 import { Router } from "express";
 
 import { validateBody } from "../middlewares/validateBody.js";
-import {
-  createUserValidationSchema,
-  updateUserValidationSchema,
-} from "../validation/userSchemas.js";
+import { updateUserValidationSchema } from "../validation/userSchemas.js";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import {
-  createUser,
-  deleteUser,
+  getAllUsers,
   getUser,
-  getUsers,
   updateUser,
+  deleteUser,
 } from "../controllers/userController.js";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 
 const router = Router();
 
-router.get("/", ctrlWrapper(getUsers));
+router.get("/", ctrlWrapper(getAllUsers));
 
-router.get("/:id", ctrlWrapper(getUser));
-
-router.post(
-  "/",
-  validateBody(createUserValidationSchema),
-  ctrlWrapper(createUser)
-);
+router.get("/me", authenticateToken, ctrlWrapper(getUser));
 
 router.put(
-  "/:id",
+  "/me",
+  authenticateToken,
   validateBody(updateUserValidationSchema),
   ctrlWrapper(updateUser)
 );
 
-router.delete("/:id", ctrlWrapper(deleteUser));
+router.delete("/me", authenticateToken, ctrlWrapper(deleteUser));
 
 export default router;
