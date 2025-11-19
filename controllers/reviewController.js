@@ -46,8 +46,9 @@ export const getReview = async (req, res) => {
 };
 
 export const createReview = async (req, res) => {
+  const userId = req.user.id;
   const user = await prisma.user.findUnique({
-    where: { id: req.body.userId },
+    where: { id: userId },
   });
 
   if (!user) {
@@ -61,7 +62,7 @@ export const createReview = async (req, res) => {
   }
 
   const newReview = await prisma.review.create({
-    data: { ...req.body },
+    data: { ...req.body, userId },
   });
 
   return res.status(201).json({
@@ -79,6 +80,12 @@ export const updateReview = async (req, res) => {
 
   if (!review) {
     throw createHttpError(404, "Review not found");
+  }
+
+  const userId = req.user.id;
+
+  if (review.userId !== userId) {
+    throw createHttpError(403, "Access to the requested resource is forbidden");
   }
 
   const updatedReview = await prisma.review.update({
@@ -100,6 +107,11 @@ export const deleteReview = async (req, res) => {
 
   if (!review) {
     throw createHttpError(404, "Review not found");
+  }
+  const userId = req.user.id;
+
+  if (review.userId !== userId) {
+    throw createHttpError(403, "Access to the requested resource is forbidden");
   }
 
   await prisma.review.delete({ where: { id: parseInt(req.params.id) } });
