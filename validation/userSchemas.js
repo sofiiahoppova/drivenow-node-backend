@@ -38,6 +38,6 @@ export const createUserValidationSchema = Joi.object({
 });
 
 export const updateUserValidationSchema = createUserValidationSchema.fork(
-  ["fullName", "email", "password"],
+  ["fullName", "email"],
   (schema) => schema.optional()
 );

@@ -15,14 +15,9 @@ export const createReviewValidationSchema = Joi.object({
     "number.integer": "Car Id must be a valid integer",
     "any.required": "Please add car id",
   }),
-  userId: Joi.number().integer().required().messages({
-    "number.base": "User Id must be a number",
-    "number.integer": "User Id must be a valid integer",
-    "any.required": "Please add user id",
-  }),
 });
 
 export const updateReviewValidationSchema = createReviewValidationSchema.fork(
-  ["description", "rating", "carId", "userId"],
+  ["description", "rating", "carId"],
   (schema) => schema.optional()
 );
