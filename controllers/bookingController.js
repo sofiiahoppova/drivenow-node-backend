@@ -64,7 +64,12 @@ export const createBooking = async (req, res) => {
   }
 
   const newBooking = await prisma.booking.create({
-    data: { ...req.body, userId },
+    data: {
+      ...req.body,
+      startDate: new Date(req.body.startDate),
+      endDate: new Date(req.body.endDate),
+      userId,
+    },
   });
 
   return res.status(201).json({
@@ -89,8 +94,17 @@ export const updateBooking = async (req, res) => {
     throw createHttpError(403, "Access to the requested resource is forbidden");
   }
 
+  let startDate, endDate;
+
+  if (req.body.startDate) startDate = new Date(req.body.startDate);
+  if (req.body.endDate) endDate = new Date(req.body.endDate);
+
   const updatedBooking = await prisma.booking.update({
-    data: { ...req.body },
+    data: {
+      ...req.body,
+      startDate: startDate || booking.startDate,
+      endDate: endDate || booking.endDate,
+    },
     where: { id: parseInt(id) },
   });
 
