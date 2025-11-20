@@ -65,6 +65,17 @@ export const createReview = async (req, res) => {
     data: { ...req.body, userId },
   });
 
+  // Оновлення середнього рейтингу та кількості відгуків
+  const [quantity, rating] = await ratingCalc(req.body.carId);
+
+  await prisma.car.update({
+    where: { id: req.body.carId },
+    data: {
+      averageRating: rating,
+      reviewCount: quantity,
+    },
+  });
+
   return res.status(201).json({
     status: 200,
     message: "Successfully added review to database",
