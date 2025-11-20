@@ -24,11 +24,12 @@ export const createUserValidationSchema = Joi.object({
   phoneNumber: Joi.string().max(15).messages({
     "string.max": "Phone number must not exceed 15 characters",
   }),
-  dateOfBirth: Joi.date().iso().messages({
-    "date.base": "Date of birth must be a valid date",
-    "date.format":
-      "The date of birth does not match the required format: YYYY-MM-DD",
-  }),
+  dateOfBirth: Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .messages({
+      "string.pattern.base":
+        "Date of birth does not match the required format: YYYY-MM-DD",
+    }),
   passportUrl: Joi.string().uri().messages({
     "string.uri": "Passport URL must be a valid link",
   }),
@@ -38,6 +39,6 @@ export const createUserValidationSchema = Joi.object({
 });
 
 export const updateUserValidationSchema = createUserValidationSchema.fork(
-  ["fullName", "email"],
+  ["fullName", "email", "password"],
   (schema) => schema.optional()
 );
