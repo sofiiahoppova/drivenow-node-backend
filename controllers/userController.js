@@ -41,10 +41,6 @@ export const updateUser = async (req, res) => {
     throw createHttpError(404, "User not found");
   }
 
-  if (!(await bcrypt.compare(req.body.password, user.password))) {
-    throw createHttpError(401, "Wrong password. Unauthorised");
-  }
-
   if (req.body.phoneNumber) {
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -68,10 +64,18 @@ export const updateUser = async (req, res) => {
     }
   }
 
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  let hashedPassword;
+
+  if (req.body.password) {
+    hashedPassword = await bcrypt.hash(req.body.password, 10);
+  }
 
   const updatedUser = await prisma.user.update({
-    data: { ...req.body, password: hashedPassword },
+    data: {
+      ...req.body,
+      password: hashedPassword,
+      dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
+    },
     where: { id: parseInt(id) },
   });
 
