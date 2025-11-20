@@ -18,7 +18,7 @@ export const getAllCars = async (req, res) => {
   } = req.query;
 
   const filters = {
-    ...(seats && { seats }),
+    ...(seats && { seats: parseInt(seats) }),
     ...(brand && { brand }),
     ...(transmission && { transmission }),
     ...(carClass && { carClass }),
@@ -37,8 +37,8 @@ export const getAllCars = async (req, res) => {
 
   const cars = await prisma.car.findMany({
     where: filters,
-    skip: (page - 1) * perPage,
-    take: perPage,
+    skip: (parseInt(page) - 1) * parseInt(perPage),
+    take: parseInt(perPage),
     include: {
       prices: {
         select: {
