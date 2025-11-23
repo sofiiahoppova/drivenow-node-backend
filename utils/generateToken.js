@@ -11,3 +11,9 @@ export const generateRefreshToken = (id) => {
     expiresIn: "7d",
   });
 };
+
+export const generateResetToken = (id) => {
+  return jwt.sign({ id }, process.env.RESET_TOKEN_SECRET, {
+    expiresIn: "10m",
+  });
+};
