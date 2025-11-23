@@ -9,6 +9,11 @@ import {
   refreshUser,
   registerUser,
 } from "../controllers/authController.js";
+import {
+  forgotPassoword,
+  resetPassword,
+  updatePassword,
+} from "../controllers/passwordController.js";
 
 const router = Router();
 
@@ -19,6 +24,12 @@ router.post(
 );
 
 router.post("/login", ctrlWrapper(loginUser));
+
+router.post("/forgot-password", ctrlWrapper(forgotPassoword));
+
+router.post("/reset-password/:token", ctrlWrapper(resetPassword));
+
+router.post("/reset-password", ctrlWrapper(updatePassword));
 
 router.post("/refresh", ctrlWrapper(refreshUser));
 
