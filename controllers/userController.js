@@ -17,7 +17,13 @@ export const getAllUsers = async (req, res) => {
 export const getUser = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: parseInt(req.user.id) },
-    include: { bookings: true },
+    include: {
+      bookings: {
+        include: {
+          car: { select: { carClass: true, model: true, brand: true } },
+        },
+      },
+    },
   });
 
   if (!user) {
