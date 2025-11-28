@@ -17,6 +17,9 @@ export const getAllCars = async (req, res) => {
     endDate,
   } = req.query;
 
+  const pageNum = parseInt(page);
+  const limit = parseInt(perPage);
+
   const filters = {
     ...(seats && { seats: parseInt(seats) }),
     ...(brand && { brand }),
@@ -35,10 +38,14 @@ export const getAllCars = async (req, res) => {
     };
   }
 
+  const totalItems = await prisma.car.count({
+    where: filters,
+  });
+
   const cars = await prisma.car.findMany({
     where: filters,
-    skip: (parseInt(page) - 1) * parseInt(perPage),
-    take: parseInt(perPage),
+    skip: (pageNum - 1) * limit,
+    take: limit,
     include: {
       prices: {
         select: {
@@ -62,6 +69,14 @@ export const getAllCars = async (req, res) => {
   return res.status(200).json({
     status: 200,
     message: `Successfully found cars`,
+    pagination: {
+      page: pageNum,
+      perPage: limit,
+      totalItems,
+      totalPages,
+      hasNextPage: pageNum < totalPages,
+      hasPrevPage: pageNum > 1,
+    },
     data: cars,
   });
 };
