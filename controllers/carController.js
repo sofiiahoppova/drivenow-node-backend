@@ -42,6 +42,8 @@ export const getAllCars = async (req, res) => {
     where: filters,
   });
 
+  const totalPages = Math.ceil(totalItems / limit);
+
   const cars = await prisma.car.findMany({
     where: filters,
     skip: (pageNum - 1) * limit,
