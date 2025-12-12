@@ -30,11 +30,14 @@ export const createUserValidationSchema = Joi.object({
       "string.pattern.base":
         "Date of birth does not match the required format: YYYY-MM-DD",
     }),
-  passportUrl: Joi.string().uri().messages({
-    "string.uri": "Passport URL must be a valid link",
+  passportSerial: Joi.string().max(50).messages({
+    "string.base": "Password serial number must be a string",
+    "string.max": "Password serial number must not exceed 50 characters",
   }),
-  driverLicenseUrl: Joi.string().uri().messages({
-    "string.uri": "License URL must be a valid link",
+  driverLicenseSerial: Joi.string().max(50).messages({
+    "string.base": "Driver's license serial number must be a string",
+    "string.max":
+      "Driver's license serial number must not exceed 50 characters",
   }),
 });
 
