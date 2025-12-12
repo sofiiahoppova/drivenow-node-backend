@@ -13,18 +13,18 @@ datasource db {
 // --------------------
 
 model User {
-  id               Int       @id @default(autoincrement())
-  fullName         String    @db.VarChar(50)
-  email            String    @unique @db.VarChar(100)
-  password         String
-  phoneNumber      String?   @unique @db.VarChar(15)
-  dateOfBirth      DateTime?
-  passportUrl      String?
-  driverLicenseUrl String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  reviews          Review[]
-  bookings         Booking[]
+  id                  Int       @id @default(autoincrement())
+  fullName            String    @db.VarChar(50)
+  email               String    @unique @db.VarChar(100)
+  password            String
+  phoneNumber         String?   @unique @db.VarChar(15)
+  dateOfBirth         DateTime?
+  passportSerial      String?
+  driverLicenseSerial String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  reviews             Review[]
+  bookings            Booking[]
 }
 
 model Car {
