@@ -57,6 +57,37 @@ export const createBooking = async (req, res) => {
     throw createHttpError(404, "User with passed id not found");
   }
 
+  if (req.body.phoneNumber) {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        phoneNumber: req.body.phoneNumber,
+        NOT: { id: parseInt(userId) },
+      },
+    });
+    if (existingUser) {
+      throw createHttpError(409, "User with this phone number already exists");
+    }
+  }
+
+  if (req.body.email) {
+    const existingUser = await prisma.user.findFirst({
+      where: { email: req.body.email },
+      NOT: { id: parseInt(userId) },
+    });
+
+    if (existingUser) {
+      throw createHttpError(409, `${req.body.email} is already taken`);
+    }
+  }
+
+  const updatedUser = await prisma.user.update({
+    data: {
+      ...req.body.user,
+      dateOfBirth: new Date(req.body.user.dateOfBirth),
+    },
+    where: { id: parseInt(userId) },
+  });
+
   const car = await prisma.car.findUnique({ where: { id: req.body.carId } });
 
   if (!car) {
@@ -65,7 +96,8 @@ export const createBooking = async (req, res) => {
 
   const newBooking = await prisma.booking.create({
     data: {
-      ...req.body,
+      plan: req.body.plan,
+      carId: req.body.carId,
       startDate: new Date(req.body.startDate),
       endDate: new Date(req.body.endDate),
       userId,
@@ -75,7 +107,7 @@ export const createBooking = async (req, res) => {
   return res.status(201).json({
     status: 200,
     message: "Successfully added booking to database",
-    data: newBooking,
+    data: { ...newBooking, user: updatedUser },
   });
 };
 
