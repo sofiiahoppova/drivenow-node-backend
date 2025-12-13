@@ -88,6 +88,11 @@ export const refreshUser = async (req, res) => {
 };
 
 export const loguotUser = (req, res) => {
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    path: "/",
+  });
   res.status(204).send("Logged out successfully");
 };
