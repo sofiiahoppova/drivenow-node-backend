@@ -21,10 +21,24 @@ export const registerUser = async (req, res) => {
     data: { ...req.body, password: hashedPassword },
   });
 
+  const accessToken = generateAccessToken(newUser.id);
+  const refreshToken = generateRefreshToken(newUser.id);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+  });
+
+  const { password: _, ...safeUser } = newUser;
+
   return res.status(201).json({
-    status: 200,
-    message: "User registered successfully",
-    data: newUser,
+    status: 201,
+    message: "User registered and logged in successfully",
+    data: {
+      user: safeUser,
+      accessToken,
+    },
   });
 };
 
@@ -46,8 +60,8 @@ export const loginUser = async (req, res) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
   });
 
   return res.status(200).json({
