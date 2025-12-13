@@ -61,8 +61,7 @@ export const updateUser = async (req, res) => {
 
   if (req.body.email) {
     const existingUser = await prisma.user.findFirst({
-      where: { email: req.body.email },
-      NOT: { id: parseInt(id) },
+      where: { email: req.body.email, NOT: { id: parseInt(id) } },
     });
 
     if (existingUser) {
@@ -70,19 +69,21 @@ export const updateUser = async (req, res) => {
     }
   }
 
+  const data = {
+    ...req.body,
+    dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
+  };
+
   let hashedPassword;
 
   if (req.body.password) {
     hashedPassword = await bcrypt.hash(req.body.password, 10);
+    data.password = hashedPassword;
   }
 
   const updatedUser = await prisma.user.update({
-    data: {
-      ...req.body,
-      password: hashedPassword,
-      dateOfBirth: req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : null,
-    },
     where: { id: parseInt(id) },
+    data,
   });
 
   return res.status(200).json({
