@@ -84,7 +84,7 @@ export const refreshUser = async (req, res) => {
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, payload) => {
     if (err) {
-      throw createHttpError(403, "Forbidden", { message: err.message });
+      throw createHttpError(401, "Forbidden", { message: err.message });
     }
     const accessToken = generateAccessToken(payload.id);
     return res.status(200).json({ accessToken });

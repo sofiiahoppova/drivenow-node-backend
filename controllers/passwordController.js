@@ -64,7 +64,7 @@ export const resetPassword = async (req, res) => {
     userId = decoded.id;
   } catch (err) {
     console.error("Token verification error:", err.message);
-    throw createHttpError(403, "Invalid or expired reset token");
+    throw createHttpError(401, "Invalid or expired reset token");
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -91,7 +91,7 @@ export const updatePassword = async (req, res) => {
     userId = decoded.id;
   } catch (err) {
     throw createHttpError(
-      403,
+      401,
       "Invalid or expired token. Please restart the process."
     );
   }
