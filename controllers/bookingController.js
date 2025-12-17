@@ -7,7 +7,7 @@ export const getMyBookings = async (req, res) => {
   const bookings = await prisma.booking.findMany({
     where: { userId: req.user.id },
     include: {
-      car: { select: { brand: true, model: true } },
+      car: { select: { brand: true, model: true, carClass: true } },
       user: { select: { fullName: true, email: true } },
     },
   });
