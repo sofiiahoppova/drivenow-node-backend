@@ -12,7 +12,6 @@ import {
 import {
   forgotPassoword,
   resetPassword,
-  updatePassword,
 } from "../controllers/passwordController.js";
 
 const router = Router();
@@ -27,9 +26,7 @@ router.post("/login", ctrlWrapper(loginUser));
 
 router.post("/forgot-password", ctrlWrapper(forgotPassoword));
 
-router.post("/reset-password/:token", ctrlWrapper(resetPassword));
-
-router.post("/reset-password", ctrlWrapper(updatePassword));
+router.post("/reset-password", ctrlWrapper(resetPassword));
 
 router.post("/refresh", ctrlWrapper(refreshUser));
 
