@@ -33,7 +33,7 @@ export const forgotPassoword = async (req, res, next) => {
     from: "sofiabusiness567@gmail.com",
     to: email,
     subject: "Password Reset",
-    text: `Click the following link to reset your password: http://localhost:5173/reset-password?token=${resetToken}`,
+    text: `Click the following link to reset your password: ${process.env.CLIENT_BASE_URL}/reset-password?token=${resetToken}`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
