@@ -12,13 +12,13 @@ import authRoute from "./routes/authRoute.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
-const app = express();
+export const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", process.env.CLIENT_BASE_URL],
+    origin: ["https://drivenow-react-app.vercel.app"],
     credentials: true,
   })
 );
